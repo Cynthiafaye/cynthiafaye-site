@@ -1,160 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-const BASE_PATH = '/cynthiafaye-website';
-
-
-function SparkleField({ count = 30 }: { count?: number }) {
-  const [particles, setParticles] = useState<Array<{ id: number; left: string; delay: string; duration: string; size: number }>>([]);
-
-  useEffect(() => {
-    const p = Array.from({ length: count }, (_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 8}s`,
-      duration: `${4 + Math.random() * 6}s`,
-      size: 2 + Math.random() * 5,
-    }));
-    setParticles(p);
-  }, [count]);
-
-  return (
-    <div className="sparkle-field">
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="sparkle-particle"
-          style={{
-            left: p.left,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-            width: p.size,
-            height: p.size,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function GlitterDots({ count = 20 }: { count?: number }) {
-  const [dots, setDots] = useState<Array<{ id: number; left: string; top: string; delay: string; size: number }>>([]);
-
-  useEffect(() => {
-    const d = Array.from({ length: count }, (_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 3}s`,
-      size: 2 + Math.random() * 3,
-    }));
-    setDots(d);
-  }, [count]);
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {dots.map((d) => (
-        <div
-          key={d.id}
-          className="absolute rounded-full"
-          style={{
-            left: d.left,
-            top: d.top,
-            width: d.size,
-            height: d.size,
-            background: '#ffd700',
-            boxShadow: '0 0 6px #ffd700, 0 0 12px rgba(255,215,0,0.5)',
-            animation: `glitter-pulse 2s ease-in-out infinite`,
-            animationDelay: d.delay,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function NavBar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const links = [
-    { href: '#services', label: 'Services' },
-    { href: '#about', label: 'About' },
-    { href: '#tiktok', label: 'TikTok' },
-    { href: '#testimonials', label: 'Reviews' },
-    { href: '#contact', label: 'Contact' },
-  ];
-
-  return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? 'bg-white/90 backdrop-blur-md border-b border-pink-200 shadow-lg shadow-pink-100/30'
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#" className={`font-script text-2xl md:text-3xl transition-colors ${scrolled ? 'text-pink-500' : 'text-gold-bright'}`}>
-          Cynthia Faye
-        </a>
-
-        <div className="hidden md:flex items-center gap-8">
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={`font-display text-sm tracking-[0.2em] uppercase transition-colors duration-300 ${
-                scrolled ? 'text-purple-800 hover:text-pink-500' : 'text-white/90 hover:text-gold-bright'
-              }`}
-            >
-              {link.label}
-            </a>
-          ))}
-          <a href="#contact" className="btn-glam text-sm !py-2 !px-5">
-            Book a Reading
-          </a>
-        </div>
-
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className={`md:hidden text-2xl p-2 ${scrolled ? 'text-pink-500' : 'text-gold-bright'}`}
-          aria-label="Menu"
-        >
-          {mobileOpen ? '✕' : '☰'}
-        </button>
-      </div>
-
-      {mobileOpen && (
-        <div className="md:hidden bg-white/98 backdrop-blur-lg border-t border-pink-100 px-6 pb-6">
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="block py-3 font-display text-sm tracking-[0.2em] uppercase text-purple-800 hover:text-pink-500 transition-colors border-b border-pink-50"
-            >
-              {link.label}
-            </a>
-          ))}
-          <a
-            href="#contact"
-            onClick={() => setMobileOpen(false)}
-            className="btn-glam text-sm !py-2 !px-5 inline-block mt-4"
-          >
-            Book a Reading
-          </a>
-        </div>
-      )}
-    </nav>
-  );
-}
+import Link from 'next/link';
+import NavBar from '@/app/components/NavBar';
+import Footer from '@/app/components/Footer';
+import SparkleField from '@/app/components/SparkleField';
+import GlitterDots from '@/app/components/GlitterDots';
 
 function HeroSection() {
   return (
@@ -178,7 +28,7 @@ function HeroSection() {
             <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-gold-bright/50 shadow-2xl shadow-gold-bright/20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`${BASE_PATH}/cynthia-faye-logo.png`}
+                src="/cynthia-faye-logo.png"
                 alt="Cynthia Faye - The Gift"
                 className="w-full h-full object-cover"
               />
@@ -209,9 +59,9 @@ function HeroSection() {
         </div>
 
         <div className="animate-slide-up mt-10" style={{ animationDelay: '0.9s', animationFillMode: 'both' }}>
-          <a href="#services" className="btn-glam text-base md:text-lg">
+          <Link href="/booking" className="btn-glam text-base md:text-lg inline-block">
             &#10024; Book a Reading &#10024;
-          </a>
+          </Link>
         </div>
 
         <div className="animate-slide-up mt-6" style={{ animationDelay: '1.1s', animationFillMode: 'both' }}>
@@ -236,26 +86,26 @@ function HeroSection() {
 function ServicesSection() {
   const services = [
     {
+      id: 'diamond',
       name: 'Diamond Reading',
       price: '$100',
-      duration: '30 minutes',
       description: 'A focused, illuminating session that delivers clarity and guidance. Perfect for specific questions or a first-time experience with Cynthia.',
-      image: `${BASE_PATH}/diamond.png`,
+      image: '/diamond.png',
     },
     {
+      id: 'signature',
       name: 'Signature Reading',
       price: '$180',
-      duration: '30 minutes',
       description: 'Cynthia\'s most popular reading. A deep, immersive journey into your past, present, and future. Comprehensive spiritual guidance tailored to your life path.',
-      image: `${BASE_PATH}/signature.png`,
+      image: '/signature.png',
       featured: true,
     },
     {
+      id: 'crossover',
       name: 'Crossover Reading',
       price: '$180',
-      duration: '30 minutes',
       description: 'Connect with loved ones who have crossed over. A profoundly healing experience that bridges the physical and spiritual worlds. Messages of love, closure, and peace.',
-      image: `${BASE_PATH}/crossover.png`,
+      image: '/crossover.png',
     },
   ];
 
@@ -297,12 +147,12 @@ function ServicesSection() {
               <div className="divider-glam w-20 mx-auto mb-4" />
               <p className="text-purple-700/80 font-body text-lg leading-relaxed">{service.description}</p>
 
-              <a
-                href="#contact"
+              <Link
+                href={`/booking?type=${service.id}`}
                 className="btn-gold inline-block mt-6 text-sm"
               >
                 Book Now
-              </a>
+              </Link>
             </div>
           ))}
         </div>
@@ -504,8 +354,14 @@ function ContactSection() {
             Book Your Reading
           </h2>
           <p className="text-purple-700/70 font-body text-lg mt-4 max-w-xl mx-auto">
-            Ready to begin your journey? Reach out to schedule your personal reading with Cynthia.
+            Ready to begin your journey? Book online or reach out directly.
           </p>
+        </div>
+
+        <div className="text-center mb-12">
+          <Link href="/booking" className="btn-glam text-base md:text-lg inline-block">
+            &#10024; Book Online Now &#10024;
+          </Link>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -576,28 +432,6 @@ function ContactSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="relative bg-gradient-to-b from-purple-50 to-pink-50 border-t border-pink-200 py-12">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center">
-          <p className="font-script text-3xl text-pink-500 mb-3">Cynthia Faye</p>
-          <p className="font-display text-sm tracking-[0.2em] uppercase text-purple-400 mb-6">
-            The Gift &mdash; Psychic Medium & Spiritual Coach
-          </p>
-          <div className="divider-glam w-32 mx-auto mb-6" />
-          <p className="text-purple-400 font-body text-sm">
-            &copy; {new Date().getFullYear()} Cynthia Faye &mdash; The Gift. All rights reserved.
-          </p>
-          <p className="text-purple-300 font-body text-xs mt-2">
-            Santa Rosa Beach, FL &bull; Serving the Emerald Coast
-          </p>
-        </div>
-      </div>
-    </footer>
   );
 }
 
