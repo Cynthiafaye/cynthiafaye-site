@@ -12,7 +12,7 @@ function SparkleField({ count = 30 }: { count?: number }) {
       left: `${Math.random() * 100}%`,
       delay: `${Math.random() * 8}s`,
       duration: `${4 + Math.random() * 6}s`,
-      size: 2 + Math.random() * 4,
+      size: 2 + Math.random() * 5,
     }));
     setParticles(p);
   }, [count]);
@@ -29,6 +29,42 @@ function SparkleField({ count = 30 }: { count?: number }) {
             animationDuration: p.duration,
             width: p.size,
             height: p.size,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function GlitterDots({ count = 20 }: { count?: number }) {
+  const [dots, setDots] = useState<Array<{ id: number; left: string; top: string; delay: string; size: number }>>([]);
+
+  useEffect(() => {
+    const d = Array.from({ length: count }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 3}s`,
+      size: 2 + Math.random() * 3,
+    }));
+    setDots(d);
+  }, [count]);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {dots.map((d) => (
+        <div
+          key={d.id}
+          className="absolute rounded-full"
+          style={{
+            left: d.left,
+            top: d.top,
+            width: d.size,
+            height: d.size,
+            background: '#ffd700',
+            boxShadow: '0 0 6px #ffd700, 0 0 12px rgba(255,215,0,0.5)',
+            animation: `glitter-pulse 2s ease-in-out infinite`,
+            animationDelay: d.delay,
           }}
         />
       ))}
@@ -58,12 +94,12 @@ function NavBar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-midnight/95 backdrop-blur-md border-b border-gold/20 shadow-lg shadow-gold/5'
+          ? 'bg-white/90 backdrop-blur-md border-b border-pink-200 shadow-lg shadow-pink-100/30'
           : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#" className="font-script text-gold text-2xl md:text-3xl hover:text-gold-bright transition-colors">
+        <a href="#" className={`font-script text-2xl md:text-3xl transition-colors ${scrolled ? 'text-pink-500' : 'text-gold-bright'}`}>
           Cynthia Faye
         </a>
 
@@ -72,19 +108,21 @@ function NavBar() {
             <a
               key={link.href}
               href={link.href}
-              className="font-display text-sm tracking-[0.2em] uppercase text-mystic-200 hover:text-gold transition-colors duration-300"
+              className={`font-display text-sm tracking-[0.2em] uppercase transition-colors duration-300 ${
+                scrolled ? 'text-purple-800 hover:text-pink-500' : 'text-white/90 hover:text-gold-bright'
+              }`}
             >
               {link.label}
             </a>
           ))}
-          <a href="#contact" className="btn-mystic text-sm !py-2 !px-5">
+          <a href="#contact" className="btn-glam text-sm !py-2 !px-5">
             Book a Reading
           </a>
         </div>
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden text-gold text-2xl p-2"
+          className={`md:hidden text-2xl p-2 ${scrolled ? 'text-pink-500' : 'text-gold-bright'}`}
           aria-label="Menu"
         >
           {mobileOpen ? '✕' : '☰'}
@@ -92,13 +130,13 @@ function NavBar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden bg-midnight/98 backdrop-blur-lg border-t border-gold/10 px-6 pb-6">
+        <div className="md:hidden bg-white/98 backdrop-blur-lg border-t border-pink-100 px-6 pb-6">
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="block py-3 font-display text-sm tracking-[0.2em] uppercase text-mystic-200 hover:text-gold transition-colors border-b border-mystic-800/50"
+              className="block py-3 font-display text-sm tracking-[0.2em] uppercase text-purple-800 hover:text-pink-500 transition-colors border-b border-pink-50"
             >
               {link.label}
             </a>
@@ -106,7 +144,7 @@ function NavBar() {
           <a
             href="#contact"
             onClick={() => setMobileOpen(false)}
-            className="btn-mystic text-sm !py-2 !px-5 inline-block mt-4"
+            className="btn-glam text-sm !py-2 !px-5 inline-block mt-4"
           >
             Book a Reading
           </a>
@@ -118,31 +156,35 @@ function NavBar() {
 
 function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cosmic">
-      <SparkleField count={40} />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-glam-hero">
+      <SparkleField count={50} />
 
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full border border-gold/10 animate-rotate-slow" />
-        <div className="absolute w-[400px] h-[400px] md:w-[550px] md:h-[550px] rounded-full border border-neon-purple/10 animate-rotate-slow" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
-        <div className="absolute w-[250px] h-[250px] md:w-[350px] md:h-[350px] rounded-full border border-neon-pink/8 animate-rotate-slow" style={{ animationDuration: '15s' }} />
+        <div className="w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full border border-gold-bright/15 animate-rotate-slow" />
+        <div className="absolute w-[400px] h-[400px] md:w-[550px] md:h-[550px] rounded-full border border-pink-400/15 animate-rotate-slow" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
+        <div className="absolute w-[250px] h-[250px] md:w-[350px] md:h-[350px] rounded-full border border-purple-400/10 animate-rotate-slow" style={{ animationDuration: '15s' }} />
       </div>
 
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-neon-purple/10 rounded-full blur-[100px]" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-neon-pink/8 rounded-full blur-[120px]" />
+      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pink-500/15 rounded-full blur-[100px]" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-[120px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gold-bright/10 rounded-full blur-[150px]" />
 
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         <div className="animate-fade-in">
-          <div className="relative w-40 h-40 md:w-52 md:h-52 mx-auto mb-8 animate-float">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold/30 via-neon-purple/20 to-neon-pink/20 blur-xl animate-glow-pulse" />
-            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gold/40 shadow-lg shadow-gold/20">
+          <div className="relative w-56 h-56 md:w-72 md:h-72 mx-auto mb-8 animate-float">
+            <div className="absolute inset-[-12px] rounded-2xl bg-gradient-to-br from-gold-bright/40 via-pink-500/30 to-purple-500/30 blur-2xl animate-glow-pulse" />
+            <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-gold-bright/50 shadow-2xl shadow-gold-bright/20">
               <Image
                 src="/cynthia-faye-profile.png"
-                alt="Cynthia Faye"
+                alt="Cynthia Faye - The Gift"
                 fill
                 className="object-cover"
                 priority
               />
             </div>
+            <div className="absolute -top-2 -right-2 w-6 h-6 bg-gold-bright rounded-full blur-sm animate-sparkle" />
+            <div className="absolute -bottom-1 -left-3 w-4 h-4 bg-pink-400 rounded-full blur-sm animate-sparkle" style={{ animationDelay: '0.5s' }} />
+            <div className="absolute top-1/2 -right-4 w-3 h-3 bg-purple-400 rounded-full blur-sm animate-sparkle" style={{ animationDelay: '1s' }} />
           </div>
         </div>
 
@@ -153,21 +195,21 @@ function HeroSection() {
         </div>
 
         <div className="animate-slide-up" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
-          <p className="font-display text-lg md:text-xl tracking-[0.3em] uppercase text-mystic-200 mb-2">
+          <p className="font-display text-lg md:text-xl tracking-[0.3em] uppercase text-pink-200 mb-2">
             The Gift
           </p>
-          <div className="divider-mystic w-48 mx-auto my-4" />
-          <p className="font-display text-base md:text-lg tracking-[0.15em] uppercase text-gold/80">
+          <div className="divider-glam w-48 mx-auto my-4" />
+          <p className="font-display text-base md:text-lg tracking-[0.15em] uppercase text-gold-bright/90">
             Medium & Psychic Coach
           </p>
-          <p className="font-body text-mystic-300 text-lg md:text-xl mt-3">
+          <p className="text-purple-200 text-lg md:text-xl mt-3 font-body">
             More Than 30 Years Experience
           </p>
         </div>
 
         <div className="animate-slide-up mt-10" style={{ animationDelay: '0.9s', animationFillMode: 'both' }}>
-          <a href="#services" className="btn-mystic text-base md:text-lg">
-            Book a Reading
+          <a href="#services" className="btn-glam text-base md:text-lg">
+            &#10024; Book a Reading &#10024;
           </a>
         </div>
 
@@ -177,13 +219,13 @@ function HeroSection() {
               <span key={i} className="star-gold text-xl">&#9733;</span>
             ))}
           </div>
-          <p className="text-mystic-300 text-sm mt-1 font-body">Trusted by hundreds of clients</p>
+          <p className="text-purple-200 text-sm mt-1 font-body">Trusted by hundreds of clients</p>
         </div>
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
-        <div className="w-6 h-10 rounded-full border-2 border-gold/40 flex justify-center pt-2">
-          <div className="w-1 h-3 bg-gold/60 rounded-full animate-bounce" />
+        <div className="w-6 h-10 rounded-full border-2 border-gold-bright/50 flex justify-center pt-2">
+          <div className="w-1 h-3 bg-gold-bright/70 rounded-full animate-bounce" />
         </div>
       </div>
     </section>
@@ -198,7 +240,7 @@ function ServicesSection() {
       duration: '30 minutes',
       description: 'A focused, illuminating session that delivers clarity and guidance. Perfect for specific questions or a first-time experience with Cynthia.',
       icon: '♦',
-      accent: 'from-gold to-gold-bright',
+      gradient: 'from-amber-400 to-yellow-300',
     },
     {
       name: 'Signature Reading',
@@ -206,7 +248,7 @@ function ServicesSection() {
       duration: '60 minutes',
       description: 'Cynthia\'s most popular reading. A deep, immersive journey into your past, present, and future. Comprehensive spiritual guidance tailored to your life path.',
       icon: '✨',
-      accent: 'from-neon-purple to-mystic-400',
+      gradient: 'from-pink-400 to-fuchsia-400',
       featured: true,
     },
     {
@@ -215,17 +257,17 @@ function ServicesSection() {
       duration: '60 minutes',
       description: 'Connect with loved ones who have crossed over. A profoundly healing experience that bridges the physical and spiritual worlds. Messages of love, closure, and peace.',
       icon: '☆',
-      accent: 'from-neon-pink to-neon-purple',
+      gradient: 'from-purple-400 to-violet-400',
     },
   ];
 
   return (
-    <section id="services" className="relative py-24 md:py-32 bg-cosmic overflow-hidden">
-      <SparkleField count={15} />
+    <section id="services" className="relative py-24 md:py-32 bg-glam-light overflow-hidden">
+      <GlitterDots count={25} />
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
-          <p className="font-display text-sm tracking-[0.3em] uppercase text-gold mb-3">Offerings</p>
-          <h2 className="font-display text-4xl md:text-5xl text-mystic-100 heading-decorated">
+          <p className="font-display text-sm tracking-[0.3em] uppercase text-pink-500 mb-3">&#10024; Offerings &#10024;</p>
+          <h2 className="font-display text-4xl md:text-5xl text-purple-900 heading-decorated">
             Readings & Services
           </h2>
         </div>
@@ -234,30 +276,30 @@ function ServicesSection() {
           {services.map((service) => (
             <div
               key={service.name}
-              className={`card-mystic rounded-xl p-8 text-center relative group ${
-                service.featured ? 'md:-mt-4 md:mb-4' : ''
+              className={`card-glam rounded-2xl p-8 text-center relative group ${
+                service.featured ? 'md:-mt-4 md:mb-4 ring-2 ring-pink-300/50' : ''
               }`}
             >
               {service.featured && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gold to-gold-bright text-midnight text-xs font-display tracking-[0.2em] uppercase px-4 py-1 rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white text-xs font-display tracking-[0.2em] uppercase px-4 py-1 rounded-full shadow-lg shadow-pink-300/30">
                   Most Popular
                 </div>
               )}
 
-              <div className={`text-4xl mb-4 bg-gradient-to-r ${service.accent} bg-clip-text`} style={{ WebkitTextFillColor: 'transparent' }}>
+              <div className={`text-4xl mb-4 bg-gradient-to-r ${service.gradient} bg-clip-text`} style={{ WebkitTextFillColor: 'transparent' }}>
                 {service.icon}
               </div>
-              <h3 className="font-display text-2xl text-gold mb-2">{service.name}</h3>
+              <h3 className="font-display text-2xl text-purple-800 mb-2">{service.name}</h3>
               <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="font-display text-3xl text-mystic-100">{service.price}</span>
-                <span className="text-mystic-400 text-sm font-body">/ {service.duration}</span>
+                <span className="font-display text-3xl text-pink-600">{service.price}</span>
+                <span className="text-purple-400 text-sm font-body">/ {service.duration}</span>
               </div>
-              <div className="divider-mystic w-20 mx-auto mb-4" />
-              <p className="text-mystic-300 font-body text-lg leading-relaxed">{service.description}</p>
+              <div className="divider-glam w-20 mx-auto mb-4" />
+              <p className="text-purple-700/80 font-body text-lg leading-relaxed">{service.description}</p>
 
               <a
                 href="#contact"
-                className="inline-block mt-6 font-display text-sm tracking-[0.15em] uppercase text-gold border border-gold/30 px-6 py-2 rounded hover:bg-gold/10 hover:border-gold/60 transition-all duration-300"
+                className="btn-gold inline-block mt-6 text-sm"
               >
                 Book Now
               </a>
@@ -266,18 +308,18 @@ function ServicesSection() {
         </div>
 
         <div className="mt-16 max-w-3xl mx-auto">
-          <div className="card-mystic rounded-xl p-8 text-center">
-            <h3 className="font-display text-2xl text-gold mb-4">Additional Services</h3>
+          <div className="card-glam rounded-2xl p-8 text-center">
+            <h3 className="font-display text-2xl text-purple-800 mb-4">&#10024; Additional Services &#10024;</h3>
             <div className="grid sm:grid-cols-2 gap-6 text-left">
               <div>
-                <h4 className="font-display text-lg text-mystic-100 mb-2">Party Bookings</h4>
-                <p className="text-mystic-300 font-body text-base">
+                <h4 className="font-display text-lg text-pink-600 mb-2">Party Bookings</h4>
+                <p className="text-purple-700/80 font-body text-base">
                   Hosting a gathering? Book Cynthia for your party, corporate event, or private group session. An unforgettable experience for your guests.
                 </p>
               </div>
               <div>
-                <h4 className="font-display text-lg text-mystic-100 mb-2">Remote Sessions</h4>
-                <p className="text-mystic-300 font-body text-base">
+                <h4 className="font-display text-lg text-pink-600 mb-2">Remote Sessions</h4>
+                <p className="text-purple-700/80 font-body text-base">
                   Available by phone, Zoom, or in-person. The spiritual connection transcends distance. Get your reading from anywhere in the world.
                 </p>
               </div>
@@ -291,19 +333,19 @@ function ServicesSection() {
 
 function AboutSection() {
   return (
-    <section id="about" className="relative py-24 md:py-32 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-midnight via-mystic-950 to-midnight" />
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+    <section id="about" className="relative py-24 md:py-32 overflow-hidden bg-glam-pink">
+      <GlitterDots count={15} />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="font-display text-sm tracking-[0.3em] uppercase text-gold mb-3">About</p>
-            <h2 className="font-display text-4xl md:text-5xl text-mystic-100 mb-6">
+            <p className="font-display text-sm tracking-[0.3em] uppercase text-pink-500 mb-3">&#10024; About &#10024;</p>
+            <h2 className="font-display text-4xl md:text-5xl text-purple-900 mb-6">
               A Gift Passed Down Through Generations
             </h2>
-            <div className="space-y-4 text-mystic-300 font-body text-lg leading-relaxed">
+            <div className="space-y-4 text-purple-800/80 font-body text-lg leading-relaxed">
               <p>
                 For more than three decades, Cynthia Faye has been sharing her extraordinary gift with those seeking guidance, healing, and connection. What began as a natural intuition has blossomed into a life&apos;s calling.
               </p>
@@ -317,22 +359,17 @@ function AboutSection() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="card-mystic rounded-xl p-6 text-center">
-              <div className="font-display text-4xl text-gold mb-2">30+</div>
-              <div className="font-display text-sm tracking-[0.15em] uppercase text-mystic-300">Years Experience</div>
-            </div>
-            <div className="card-mystic rounded-xl p-6 text-center">
-              <div className="font-display text-4xl text-gold mb-2">1000s</div>
-              <div className="font-display text-sm tracking-[0.15em] uppercase text-mystic-300">Lives Touched</div>
-            </div>
-            <div className="card-mystic rounded-xl p-6 text-center">
-              <div className="font-display text-4xl text-gold mb-2">5.0</div>
-              <div className="font-display text-sm tracking-[0.15em] uppercase text-mystic-300">Star Rating</div>
-            </div>
-            <div className="card-mystic rounded-xl p-6 text-center">
-              <div className="font-display text-4xl text-gold mb-2">3</div>
-              <div className="font-display text-sm tracking-[0.15em] uppercase text-mystic-300">Reading Types</div>
-            </div>
+            {[
+              { value: '30+', label: 'Years Experience' },
+              { value: '1000s', label: 'Lives Touched' },
+              { value: '5.0', label: 'Star Rating' },
+              { value: '3', label: 'Reading Types' },
+            ].map((stat) => (
+              <div key={stat.label} className="card-glam rounded-2xl p-6 text-center">
+                <div className="font-display text-4xl bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text" style={{ WebkitTextFillColor: 'transparent' }}>{stat.value}</div>
+                <div className="font-display text-sm tracking-[0.15em] uppercase text-purple-600 mt-1">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -342,15 +379,15 @@ function AboutSection() {
 
 function TikTokSection() {
   return (
-    <section id="tiktok" className="relative py-24 md:py-32 bg-cosmic overflow-hidden">
-      <SparkleField count={10} />
+    <section id="tiktok" className="relative py-24 md:py-32 bg-glam-light overflow-hidden">
+      <GlitterDots count={12} />
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="text-center mb-12">
-          <p className="font-display text-sm tracking-[0.3em] uppercase text-gold mb-3">Follow Along</p>
-          <h2 className="font-display text-4xl md:text-5xl text-mystic-100 heading-decorated">
+          <p className="font-display text-sm tracking-[0.3em] uppercase text-pink-500 mb-3">&#10024; Follow Along &#10024;</p>
+          <h2 className="font-display text-4xl md:text-5xl text-purple-900 heading-decorated">
             @cynthiafayethegift
           </h2>
-          <p className="text-mystic-300 font-body text-lg mt-4 max-w-xl mx-auto">
+          <p className="text-purple-700/70 font-body text-lg mt-4 max-w-xl mx-auto">
             Join Cynthia on TikTok for daily spiritual insights, live readings, and behind-the-scenes moments.
           </p>
         </div>
@@ -359,15 +396,15 @@ function TikTokSection() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="card-mystic rounded-xl aspect-[9/16] flex items-center justify-center group cursor-pointer"
+              className="card-glam rounded-2xl aspect-[9/16] flex items-center justify-center group cursor-pointer"
             >
               <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-neon-pink/20 to-neon-purple/20 flex items-center justify-center group-hover:from-neon-pink/40 group-hover:to-neon-purple/40 transition-all duration-300">
-                  <svg className="w-8 h-8 text-mystic-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center group-hover:from-pink-200 group-hover:to-purple-200 transition-all duration-300">
+                  <svg className="w-8 h-8 text-pink-400 group-hover:text-pink-600 transition-colors" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <p className="text-mystic-400 text-sm font-display tracking-wider">TikTok Video</p>
+                <p className="text-purple-400 text-sm font-display tracking-wider">TikTok Video</p>
               </div>
             </div>
           ))}
@@ -378,7 +415,7 @@ function TikTokSection() {
             href="https://www.tiktok.com/@cynthiafayethegift"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 font-display text-sm tracking-[0.15em] uppercase text-gold border border-gold/30 px-6 py-3 rounded hover:bg-gold/10 hover:border-gold/60 transition-all duration-300"
+            className="inline-flex items-center gap-2 font-display text-sm tracking-[0.15em] uppercase text-pink-600 border-2 border-pink-300 px-6 py-3 rounded-full hover:bg-pink-50 hover:border-pink-400 transition-all duration-300"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.69a8.25 8.25 0 004.76 1.51V6.75a4.83 4.83 0 01-1-.06z"/>
@@ -396,50 +433,46 @@ function TestimonialsSection() {
     {
       name: 'Sarah M.',
       text: 'Cynthia is absolutely incredible. She knew things about my late mother that no one could have known. I left feeling so much peace and closure. This was a life-changing experience.',
-      rating: 5,
     },
     {
       name: 'Jennifer L.',
       text: 'I was skeptical going in, but Cynthia blew me away. Her accuracy is unreal. She described my grandmother perfectly and delivered a message that brought me to tears. Truly gifted.',
-      rating: 5,
     },
     {
       name: 'Mike T.',
       text: 'Booked the Signature Reading and it was worth every penny. Cynthia has this amazing warmth and energy. She gave me clarity on decisions I\'d been struggling with for months.',
-      rating: 5,
     },
     {
       name: 'Amanda R.',
       text: 'Had Cynthia at my birthday party and she was the highlight of the night! Everyone was amazed. She connected with so many of our loved ones. Already planning to book her again.',
-      rating: 5,
     },
   ];
 
   return (
-    <section id="testimonials" className="relative py-24 md:py-32 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-midnight via-mystic-950 to-midnight" />
+    <section id="testimonials" className="relative py-24 md:py-32 overflow-hidden bg-glam-pink">
+      <GlitterDots count={15} />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
-          <p className="font-display text-sm tracking-[0.3em] uppercase text-gold mb-3">Testimonials</p>
-          <h2 className="font-display text-4xl md:text-5xl text-mystic-100 heading-decorated">
+          <p className="font-display text-sm tracking-[0.3em] uppercase text-pink-500 mb-3">&#10024; Testimonials &#10024;</p>
+          <h2 className="font-display text-4xl md:text-5xl text-purple-900 heading-decorated">
             What Clients Are Saying
           </h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           {testimonials.map((t, i) => (
-            <div key={i} className="card-mystic rounded-xl p-8">
+            <div key={i} className="card-glam rounded-2xl p-8">
               <div className="flex gap-1 mb-4">
-                {[...Array(t.rating)].map((_, j) => (
+                {[...Array(5)].map((_, j) => (
                   <span key={j} className="star-gold text-lg">&#9733;</span>
                 ))}
               </div>
-              <blockquote className="text-mystic-200 font-body text-lg leading-relaxed mb-4 italic">
+              <blockquote className="text-purple-800/80 font-body text-lg leading-relaxed mb-4 italic">
                 &ldquo;{t.text}&rdquo;
               </blockquote>
-              <div className="divider-mystic w-12 mb-3" />
-              <p className="font-display text-sm tracking-[0.15em] uppercase text-gold/80">{t.name}</p>
+              <div className="divider-glam w-12 mb-3" />
+              <p className="font-display text-sm tracking-[0.15em] uppercase text-pink-500">{t.name}</p>
             </div>
           ))}
         </div>
@@ -449,7 +482,7 @@ function TestimonialsSection() {
             href="https://www.google.com/search?q=cynthia+faye+the+gift+reviews"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-mystic-300 font-body text-base hover:text-gold transition-colors"
+            className="inline-flex items-center gap-2 text-purple-600 font-body text-base hover:text-pink-500 transition-colors"
           >
             See all reviews on Google
             <span className="text-lg">&rarr;</span>
@@ -462,56 +495,56 @@ function TestimonialsSection() {
 
 function ContactSection() {
   return (
-    <section id="contact" className="relative py-24 md:py-32 bg-cosmic overflow-hidden">
-      <SparkleField count={12} />
+    <section id="contact" className="relative py-24 md:py-32 bg-glam-light overflow-hidden">
+      <GlitterDots count={18} />
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
-          <p className="font-display text-sm tracking-[0.3em] uppercase text-gold mb-3">Get in Touch</p>
-          <h2 className="font-display text-4xl md:text-5xl text-mystic-100 heading-decorated">
+          <p className="font-display text-sm tracking-[0.3em] uppercase text-pink-500 mb-3">&#10024; Get in Touch &#10024;</p>
+          <h2 className="font-display text-4xl md:text-5xl text-purple-900 heading-decorated">
             Book Your Reading
           </h2>
-          <p className="text-mystic-300 font-body text-lg mt-4 max-w-xl mx-auto">
+          <p className="text-purple-700/70 font-body text-lg mt-4 max-w-xl mx-auto">
             Ready to begin your journey? Reach out to schedule your personal reading with Cynthia.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="card-mystic rounded-xl p-8 text-center">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold/20 to-gold-bright/10 flex items-center justify-center">
-              <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <div className="card-glam rounded-2xl p-8 text-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
               </svg>
             </div>
-            <h3 className="font-display text-lg text-mystic-100 mb-2">Phone</h3>
-            <a href="tel:6369490117" className="text-gold font-body text-xl hover:text-gold-bright transition-colors">
+            <h3 className="font-display text-lg text-purple-800 mb-2">Phone</h3>
+            <a href="tel:6369490117" className="text-pink-600 font-body text-xl hover:text-pink-500 transition-colors">
               (636) 949-0117
             </a>
-            <p className="text-mystic-400 font-body text-sm mt-2">Call or text to book</p>
+            <p className="text-purple-400 font-body text-sm mt-2">Call or text to book</p>
           </div>
 
-          <div className="card-mystic rounded-xl p-8 text-center">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold/20 to-gold-bright/10 flex items-center justify-center">
-              <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <div className="card-glam rounded-2xl p-8 text-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
               </svg>
             </div>
-            <h3 className="font-display text-lg text-mystic-100 mb-2">Location</h3>
-            <p className="text-gold font-body text-lg">Santa Rosa Beach, FL</p>
-            <p className="text-mystic-400 font-body text-sm mt-2">
+            <h3 className="font-display text-lg text-purple-800 mb-2">Location</h3>
+            <p className="text-pink-600 font-body text-lg">Santa Rosa Beach, FL</p>
+            <p className="text-purple-400 font-body text-sm mt-2">
               Serving Panama City Beach, Destin & the Emerald Coast
             </p>
           </div>
 
-          <div className="card-mystic rounded-xl p-8 text-center">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold/20 to-gold-bright/10 flex items-center justify-center">
-              <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <div className="card-glam rounded-2xl p-8 text-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="font-display text-lg text-mystic-100 mb-2">Hours</h3>
-            <p className="text-gold font-body text-lg">Weekends</p>
-            <p className="text-mystic-400 font-body text-sm mt-2">8:00 AM - 9:00 PM</p>
+            <h3 className="font-display text-lg text-purple-800 mb-2">Hours</h3>
+            <p className="text-pink-600 font-body text-lg">Weekends</p>
+            <p className="text-purple-400 font-body text-sm mt-2">8:00 AM - 9:00 PM</p>
           </div>
         </div>
 
@@ -521,7 +554,7 @@ function ContactSection() {
               href="https://www.facebook.com/cynthiafayethegift"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-12 h-12 rounded-full border border-gold/30 flex items-center justify-center text-gold hover:bg-gold/10 hover:border-gold/60 transition-all duration-300"
+              className="w-12 h-12 rounded-full border-2 border-pink-300 flex items-center justify-center text-pink-500 hover:bg-pink-50 hover:border-pink-400 transition-all duration-300"
               aria-label="Facebook"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -532,7 +565,7 @@ function ContactSection() {
               href="https://www.tiktok.com/@cynthiafayethegift"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-12 h-12 rounded-full border border-gold/30 flex items-center justify-center text-gold hover:bg-gold/10 hover:border-gold/60 transition-all duration-300"
+              className="w-12 h-12 rounded-full border-2 border-pink-300 flex items-center justify-center text-pink-500 hover:bg-pink-50 hover:border-pink-400 transition-all duration-300"
               aria-label="TikTok"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -548,18 +581,18 @@ function ContactSection() {
 
 function Footer() {
   return (
-    <footer className="relative bg-midnight border-t border-gold/10 py-12">
+    <footer className="relative bg-gradient-to-b from-purple-50 to-pink-50 border-t border-pink-200 py-12">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center">
-          <p className="font-script text-3xl text-gold mb-3">Cynthia Faye</p>
-          <p className="font-display text-sm tracking-[0.2em] uppercase text-mystic-400 mb-6">
+          <p className="font-script text-3xl text-pink-500 mb-3">Cynthia Faye</p>
+          <p className="font-display text-sm tracking-[0.2em] uppercase text-purple-400 mb-6">
             The Gift &mdash; Psychic Medium & Spiritual Coach
           </p>
-          <div className="divider-mystic w-32 mx-auto mb-6" />
-          <p className="text-mystic-500 font-body text-sm">
+          <div className="divider-glam w-32 mx-auto mb-6" />
+          <p className="text-purple-400 font-body text-sm">
             &copy; {new Date().getFullYear()} Cynthia Faye &mdash; The Gift. All rights reserved.
           </p>
-          <p className="text-mystic-600 font-body text-xs mt-2">
+          <p className="text-purple-300 font-body text-xs mt-2">
             Santa Rosa Beach, FL &bull; Serving the Emerald Coast
           </p>
         </div>
