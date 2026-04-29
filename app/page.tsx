@@ -178,7 +178,7 @@ function HeroSection() {
             <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-gold-bright/50 shadow-2xl shadow-gold-bright/20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`${BASE_PATH}/cynthia-faye-logo.jpg`}
+                src={`${BASE_PATH}/cynthia-faye-logo.png`}
                 alt="Cynthia Faye - The Gift"
                 className="w-full h-full object-cover"
               />
