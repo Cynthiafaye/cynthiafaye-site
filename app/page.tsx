@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+
+const BASE_PATH = '/cynthiafaye-website';
+
 
 function SparkleField({ count = 30 }: { count?: number }) {
   const [particles, setParticles] = useState<Array<{ id: number; left: string; delay: string; duration: string; size: number }>>([]);
@@ -174,12 +176,11 @@ function HeroSection() {
           <div className="relative w-56 h-56 md:w-72 md:h-72 mx-auto mb-8 animate-float">
             <div className="absolute inset-[-12px] rounded-2xl bg-gradient-to-br from-gold-bright/40 via-pink-500/30 to-purple-500/30 blur-2xl animate-glow-pulse" />
             <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-gold-bright/50 shadow-2xl shadow-gold-bright/20">
-              <Image
-                src="/cynthia-faye-profile.png"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${BASE_PATH}/cynthia-faye-logo.jpg`}
                 alt="Cynthia Faye - The Gift"
-                fill
-                className="object-cover"
-                priority
+                className="w-full h-full object-cover"
               />
             </div>
             <div className="absolute -top-2 -right-2 w-6 h-6 bg-gold-bright rounded-full blur-sm animate-sparkle" />
