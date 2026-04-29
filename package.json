@@ -9,16 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "@supabase/supabase-js": "^2.105.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^1.14.0",
     "next": "14.2.35",
+    "nodemailer": "^8.0.7",
     "react": "^18",
-    "react-dom": "^18",
-    "stripe": "^22.1.0"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

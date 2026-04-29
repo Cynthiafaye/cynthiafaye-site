@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/app/lib/stripe';
-import { createBooking, isTimeSlotAvailable, updateBookingStripeSession } from '@/app/lib/db';
+import { paypalClient, paypal } from '@/app/lib/paypal';
+import { createBooking, isTimeSlotAvailable } from '@/app/lib/db';
 import { READING_TYPES } from '@/app/lib/constants';
 
 export async function POST(request: NextRequest) {
-  if (!stripe) {
-    return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
+  if (!paypalClient) {
+    return NextResponse.json({ error: 'PayPal not configured' }, { status: 500 });
   }
 
   const body = await request.json();
@@ -38,32 +38,30 @@ export async function POST(request: NextRequest) {
   });
 
   try {
-    const origin = request.headers.get('origin') || request.nextUrl.origin;
-
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: reading.name,
-            description: `${reading.name} with Cynthia Faye on ${date} at ${formatTime(startTime)}`,
-          },
-          unit_amount: reading.price * 100,
+    const orderRequest = new paypal.orders.OrdersCreateRequest();
+    orderRequest.prefer('return=representation');
+    orderRequest.requestBody({
+      intent: 'CAPTURE',
+      purchase_units: [{
+        reference_id: booking.id,
+        description: `${reading.name} with Cynthia Faye on ${date} at ${formatTime(startTime)}`,
+        amount: {
+          currency_code: 'USD',
+          value: reading.price.toFixed(2),
         },
-        quantity: 1,
       }],
-      customer_creation: 'always',
-      metadata: {
-        bookingId: booking.id,
+      application_context: {
+        brand_name: 'Cynthia Faye - The Gift',
+        user_action: 'PAY_NOW',
       },
-      success_url: `${origin}/booking/success?session_id={CHECKOUT_SESSION_ID}&booking_id=${booking.id}`,
-      cancel_url: `${origin}/booking?cancelled=true`,
     });
 
-    await updateBookingStripeSession(booking.id, session.id);
+    const order = await paypalClient.execute(orderRequest);
 
-    return NextResponse.json({ checkoutUrl: session.url, bookingId: booking.id });
+    return NextResponse.json({
+      orderId: order.result.id,
+      bookingId: booking.id,
+    });
   } catch (error) {
     const { updateBookingStatus } = await import('@/app/lib/db');
     await updateBookingStatus(booking.id, 'cancelled');

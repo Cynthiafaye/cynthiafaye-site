@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isBefore, startOfDay, getDay } from 'date-fns';
 import { READING_TYPES, READING_FORMATS, ReadingTypeId, ReadingFormatId } from '@/app/lib/constants';
 
@@ -38,7 +38,6 @@ export default function BookingWizard({ initialType }: { initialType?: string })
     customerPhone: '',
     customerEmail: '',
   });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -105,34 +104,7 @@ export default function BookingWizard({ initialType }: { initialType?: string })
         <StepReview
           booking={booking}
           reading={selectedReading}
-          loading={loading}
-          onConfirm={async () => {
-            setLoading(true);
-            setError('');
-            try {
-              const res = await fetch('/api/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  readingType: booking.readingType,
-                  readingFormat: booking.readingFormat,
-                  date: booking.date,
-                  startTime: booking.startTime,
-                  customerName: booking.customerName,
-                  customerPhone: booking.customerPhone,
-                  customerEmail: booking.customerEmail,
-                }),
-              });
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.error || 'Checkout failed');
-              if (data.checkoutUrl) {
-                window.location.href = data.checkoutUrl;
-              }
-            } catch (err) {
-              setError(err instanceof Error ? err.message : 'Something went wrong');
-              setLoading(false);
-            }
-          }}
+          onError={(msg) => setError(msg)}
           onBack={() => setStep(4)}
         />
       )}
@@ -186,7 +158,7 @@ function StepReadingType({ selected, onSelect }: { selected: ReadingTypeId | nul
               <h3 className="font-display text-xl text-purple-800">{reading.name}</h3>
               <p className="font-display text-2xl text-pink-600">${reading.price}</p>
             </div>
-            <div className="text-purple-300 text-2xl">→</div>
+            <div className="text-purple-300 text-2xl">&rarr;</div>
           </button>
         ))}
       </div>
@@ -214,7 +186,7 @@ function StepFormat({ selected, onSelect, onBack }: { selected: ReadingFormatId 
         ))}
       </div>
       <button onClick={onBack} className="mt-6 text-purple-500 font-display text-sm tracking-wider hover:text-pink-500 transition-colors">
-        ← Back
+        &larr; Back
       </button>
     </div>
   );
@@ -254,9 +226,9 @@ function StepDateTime({ selectedDate, selectedTime, onSelect, onBack }: {
 
       <div className="card-glam rounded-2xl p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <button onClick={() => setCurrentMonth(m => addDays(startOfMonth(m), -1))} className="text-purple-500 hover:text-pink-500 p-2 font-display text-lg">←</button>
+          <button onClick={() => setCurrentMonth(m => addDays(startOfMonth(m), -1))} className="text-purple-500 hover:text-pink-500 p-2 font-display text-lg">&larr;</button>
           <h3 className="font-display text-lg text-purple-800">{format(currentMonth, 'MMMM yyyy')}</h3>
-          <button onClick={() => setCurrentMonth(m => addDays(endOfMonth(m), 1))} className="text-purple-500 hover:text-pink-500 p-2 font-display text-lg">→</button>
+          <button onClick={() => setCurrentMonth(m => addDays(endOfMonth(m), 1))} className="text-purple-500 hover:text-pink-500 p-2 font-display text-lg">&rarr;</button>
         </div>
 
         <div className="grid grid-cols-7 gap-1 mb-2">
@@ -321,7 +293,7 @@ function StepDateTime({ selectedDate, selectedTime, onSelect, onBack }: {
       )}
 
       <button onClick={onBack} className="mt-6 text-purple-500 font-display text-sm tracking-wider hover:text-pink-500 transition-colors">
-        ← Back
+        &larr; Back
       </button>
     </div>
   );
@@ -375,7 +347,7 @@ function StepCustomerInfo({ booking, onChange, onSubmit, onBack }: {
 
       <div className="flex items-center justify-between mt-6">
         <button onClick={onBack} className="text-purple-500 font-display text-sm tracking-wider hover:text-pink-500 transition-colors">
-          ← Back
+          &larr; Back
         </button>
         <button
           onClick={onSubmit}
@@ -389,19 +361,142 @@ function StepCustomerInfo({ booking, onChange, onSubmit, onBack }: {
   );
 }
 
-function StepReview({ booking, reading, loading, onConfirm, onBack }: {
+function StepReview({ booking, reading, onError, onBack }: {
   booking: BookingData;
   reading: typeof READING_TYPES[number];
-  loading: boolean;
-  onConfirm: () => void;
+  onError: (msg: string) => void;
   onBack: () => void;
 }) {
   const fmt = READING_FORMATS.find(f => f.id === booking.readingFormat);
+  const paypalRef = useRef<HTMLDivElement>(null);
+  const bookingIdRef = useRef<string>('');
+  const [paypalReady, setPaypalReady] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const renderedRef = useRef(false);
+
+  const createOrder = useCallback(async () => {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        readingType: booking.readingType,
+        readingFormat: booking.readingFormat,
+        date: booking.date,
+        startTime: booking.startTime,
+        customerName: booking.customerName,
+        customerPhone: booking.customerPhone,
+        customerEmail: booking.customerEmail,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create order');
+    return data;
+  }, [booking]);
+
+  useEffect(() => {
+    let script: HTMLScriptElement | null = null;
+
+    async function loadPayPal() {
+      try {
+        const configRes = await fetch('/api/paypal-config');
+        const configData = await configRes.json();
+        if (!configRes.ok || !configData.clientId) {
+          onError('PayPal is not configured yet. Please contact Cynthia to complete setup.');
+          return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((window as any).paypal) {
+          setPaypalReady(true);
+          return;
+        }
+
+        script = document.createElement('script');
+        script.src = `https://www.paypal.com/sdk/js?client-id=${configData.clientId}&currency=USD`;
+        script.onload = () => setPaypalReady(true);
+        script.onerror = () => onError('Failed to load PayPal. Please refresh and try again.');
+        document.body.appendChild(script);
+      } catch {
+        onError('Failed to initialize payment. Please refresh and try again.');
+      }
+    }
+
+    loadPayPal();
+
+    return () => {
+      if (script && script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, [onError]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!paypalReady || !paypalRef.current || renderedRef.current || !(window as any).paypal) return;
+    renderedRef.current = true;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color: 'gold',
+        shape: 'pill',
+        label: 'pay',
+        height: 50,
+      },
+      createOrder: async () => {
+        setProcessing(true);
+        onError('');
+        try {
+          const result = await createOrder();
+          bookingIdRef.current = result.bookingId;
+          return result.orderId;
+        } catch (err) {
+          onError(err instanceof Error ? err.message : 'Something went wrong');
+          setProcessing(false);
+          throw err;
+        }
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onApprove: async (data: any) => {
+        try {
+          const res = await fetch('/api/checkout/capture', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: data.orderID,
+              bookingId: bookingIdRef.current,
+            }),
+          });
+          const captureData = await res.json();
+
+          if (captureData.status === 'COMPLETED') {
+            window.location.href = `/booking/success?booking_id=${captureData.bookingId}`;
+          } else {
+            onError('Payment was not completed. Please try again.');
+            setProcessing(false);
+          }
+        } catch {
+          onError('Failed to confirm payment. Please contact us.');
+          setProcessing(false);
+        }
+      },
+      onCancel: () => {
+        setProcessing(false);
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onError: (err: any) => {
+        console.error('PayPal error:', err);
+        onError('Payment error. Please try again.');
+        setProcessing(false);
+      },
+    }).render(paypalRef.current);
+  }, [paypalReady, createOrder, onError]);
 
   return (
     <div>
       <h2 className="font-display text-3xl text-purple-900 text-center mb-2">Review Your Booking</h2>
-      <p className="text-purple-600/70 font-body text-center mb-8">Confirm everything looks good</p>
+      <p className="text-purple-600/70 font-body text-center mb-8">Confirm everything looks good, then pay with PayPal</p>
 
       <div className="card-glam rounded-2xl p-6 space-y-4">
         <div className="flex items-center gap-4 pb-4 border-b border-purple-100">
@@ -446,16 +541,22 @@ function StepReview({ booking, reading, loading, onConfirm, onBack }: {
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-6">
-        <button onClick={onBack} className="text-purple-500 font-display text-sm tracking-wider hover:text-pink-500 transition-colors">
-          ← Back
-        </button>
-        <button
-          onClick={onConfirm}
-          disabled={loading}
-          className={`btn-glam text-sm !py-3 !px-8 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {loading ? 'Processing...' : '✨ Pay & Book ✨'}
+      <div className="mt-6">
+        {processing && (
+          <p className="text-center text-purple-500 font-body text-sm mb-4">Processing your payment...</p>
+        )}
+        <div ref={paypalRef} className="min-h-[55px]">
+          {!paypalReady && (
+            <div className="text-center py-4">
+              <p className="text-purple-400 font-body text-sm">Loading PayPal...</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <button onClick={onBack} disabled={processing} className="text-purple-500 font-display text-sm tracking-wider hover:text-pink-500 transition-colors disabled:opacity-50">
+          &larr; Back
         </button>
       </div>
     </div>

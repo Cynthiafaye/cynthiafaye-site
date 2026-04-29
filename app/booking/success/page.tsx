@@ -46,20 +46,19 @@ function readingTypeName(id: string): string {
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
   const bookingId = searchParams.get('booking_id');
   const [booking, setBooking] = useState<BookingDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!sessionId || !bookingId) {
+    if (!bookingId) {
       setError('Missing booking information');
       setLoading(false);
       return;
     }
 
-    fetch(`/api/checkout/verify?session_id=${sessionId}&booking_id=${bookingId}`)
+    fetch(`/api/checkout/verify?booking_id=${bookingId}`)
       .then(r => r.json())
       .then(data => {
         if (data.error) throw new Error(data.error);
@@ -67,7 +66,7 @@ function SuccessContent() {
       })
       .catch(err => setError(err instanceof Error ? err.message : 'Failed to verify booking'))
       .finally(() => setLoading(false));
-  }, [sessionId, bookingId]);
+  }, [bookingId]);
 
   if (loading) {
     return (

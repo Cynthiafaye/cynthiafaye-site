@@ -12,7 +12,7 @@ export interface Booking {
   customer_email: string;
   total_price: number;
   status: string;
-  stripe_session_id?: string;
+  paypal_order_id?: string;
   created_at?: string;
 }
 
@@ -115,11 +115,11 @@ export async function updateBookingStatus(id: string, status: string) {
   }
 }
 
-export async function updateBookingStripeSession(id: string, sessionId: string) {
+export async function updateBookingPaypalOrder(id: string, orderId: string) {
   if (supabase) {
-    await supabase.from('bookings').update({ stripe_session_id: sessionId }).eq('id', id);
+    await supabase.from('bookings').update({ paypal_order_id: orderId }).eq('id', id);
   } else {
     const booking = inMemoryBookings.find(b => b.id === id);
-    if (booking) booking.stripe_session_id = sessionId;
+    if (booking) booking.paypal_order_id = orderId;
   }
 }

@@ -54,7 +54,7 @@ function HeroSection() {
             Medium & Psychic Coach
           </p>
           <p className="text-purple-200 text-lg md:text-xl mt-3 font-body">
-            More Than 30 Years Experience
+            More Than 45 Years Experience
           </p>
         </div>
 
@@ -197,7 +197,7 @@ function AboutSection() {
             </h2>
             <div className="space-y-4 text-purple-800/80 font-body text-lg leading-relaxed">
               <p>
-                For more than three decades, Cynthia Faye has been sharing her extraordinary gift with those seeking guidance, healing, and connection. What began as a natural intuition has blossomed into a life&apos;s calling.
+                For more than four decades, Cynthia Faye has been sharing her extraordinary gift with those seeking guidance, healing, and connection. What began as a natural intuition has blossomed into a life&apos;s calling.
               </p>
               <p>
                 Every reading is a luxury experience -- intimate, compassionate, and deeply personal. Cynthia creates a sacred space where you feel safe to explore, question, and discover the messages that the universe has for you.
@@ -210,7 +210,7 @@ function AboutSection() {
 
           <div className="grid grid-cols-2 gap-4">
             {[
-              { value: '30+', label: 'Years Experience' },
+              { value: '45+', label: 'Years Experience' },
               { value: '1000s', label: 'Lives Touched' },
               { value: '5.0', label: 'Star Rating' },
               { value: '3', label: 'Reading Types' },
