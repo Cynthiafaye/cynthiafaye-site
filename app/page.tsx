@@ -293,7 +293,6 @@ function ServicesSection() {
               <h3 className="font-display text-2xl text-purple-800 mb-2">{service.name}</h3>
               <div className="flex items-center justify-center gap-2 mb-4">
                 <span className="font-display text-3xl text-pink-600">{service.price}</span>
-                <span className="text-purple-400 text-sm font-body">/ {service.duration}</span>
               </div>
               <div className="divider-glam w-20 mx-auto mb-4" />
               <p className="text-purple-700/80 font-body text-lg leading-relaxed">{service.description}</p>
