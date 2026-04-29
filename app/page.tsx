@@ -240,25 +240,22 @@ function ServicesSection() {
       price: '$100',
       duration: '30 minutes',
       description: 'A focused, illuminating session that delivers clarity and guidance. Perfect for specific questions or a first-time experience with Cynthia.',
-      icon: '♦',
-      gradient: 'from-amber-400 to-yellow-300',
+      image: `${BASE_PATH}/diamond.png`,
     },
     {
       name: 'Signature Reading',
       price: '$180',
-      duration: '60 minutes',
+      duration: '30 minutes',
       description: 'Cynthia\'s most popular reading. A deep, immersive journey into your past, present, and future. Comprehensive spiritual guidance tailored to your life path.',
-      icon: '✨',
-      gradient: 'from-pink-400 to-fuchsia-400',
+      image: `${BASE_PATH}/signature.png`,
       featured: true,
     },
     {
       name: 'Crossover Reading',
       price: '$180',
-      duration: '60 minutes',
+      duration: '30 minutes',
       description: 'Connect with loved ones who have crossed over. A profoundly healing experience that bridges the physical and spiritual worlds. Messages of love, closure, and peace.',
-      icon: '☆',
-      gradient: 'from-purple-400 to-violet-400',
+      image: `${BASE_PATH}/crossover.png`,
     },
   ];
 
@@ -287,9 +284,12 @@ function ServicesSection() {
                 </div>
               )}
 
-              <div className={`text-4xl mb-4 bg-gradient-to-r ${service.gradient} bg-clip-text`} style={{ WebkitTextFillColor: 'transparent' }}>
-                {service.icon}
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={service.image}
+                alt={service.name}
+                className="w-24 h-24 mx-auto mb-4 rounded-full object-cover shadow-lg shadow-purple-200/30"
+              />
               <h3 className="font-display text-2xl text-purple-800 mb-2">{service.name}</h3>
               <div className="flex items-center justify-center gap-2 mb-4">
                 <span className="font-display text-3xl text-pink-600">{service.price}</span>
@@ -544,8 +544,8 @@ function ContactSection() {
               </svg>
             </div>
             <h3 className="font-display text-lg text-purple-800 mb-2">Hours</h3>
-            <p className="text-pink-600 font-body text-lg">Weekends</p>
-            <p className="text-purple-400 font-body text-sm mt-2">8:00 AM - 9:00 PM</p>
+            <p className="text-pink-600 font-body text-lg">Everyday</p>
+            <p className="text-purple-400 font-body text-sm mt-2">8:00 AM - 8:00 PM</p>
           </div>
         </div>
 
