@@ -1,0 +1,11 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "env": {
+    "PAYPAL_CLIENT_ID": "@paypal-client-id",
+    "PAYPAL_CLIENT_SECRET": "@paypal-client-secret",
+    "PAYPAL_MODE": "sandbox",
+    "NOTIFY_EMAIL": "Cynthiafaye553@yahoo.com",
+    "NOTIFY_PHONE": "+16369490117"
+  }
+}
