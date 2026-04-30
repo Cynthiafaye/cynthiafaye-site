@@ -242,22 +242,15 @@ function TikTokSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="card-glam rounded-2xl aspect-[9/16] flex items-center justify-center group cursor-pointer"
-            >
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center group-hover:from-pink-200 group-hover:to-purple-200 transition-all duration-300">
-                  <svg className="w-8 h-8 text-pink-400 group-hover:text-pink-600 transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <p className="text-purple-400 text-sm font-display tracking-wider">TikTok Video</p>
-              </div>
-            </div>
-          ))}
+        <div className="flex justify-center">
+          <div className="card-glam rounded-2xl overflow-hidden" style={{ maxWidth: 325 }}>
+            <iframe
+              src="https://www.tiktok.com/player/v1/7633924662233271566?autoplay=0"
+              style={{ width: 325, height: 578, border: 'none' }}
+              allow="fullscreen"
+              title="Cynthia Faye TikTok"
+            />
+          </div>
         </div>
 
         <div className="text-center mt-8">
