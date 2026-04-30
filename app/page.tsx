@@ -242,23 +242,22 @@ function TikTokSection() {
           </p>
         </div>
 
-        <div className="flex justify-center gap-4 flex-wrap">
-          <div className="card-glam rounded-2xl overflow-hidden" style={{ maxWidth: 325 }}>
-            <iframe
-              src="https://www.tiktok.com/player/v1/7633924662233271566?autoplay=0"
-              style={{ width: 325, height: 578, border: 'none' }}
-              allow="fullscreen"
-              title="Cynthia Faye TikTok 1"
-            />
-          </div>
-          <div className="card-glam rounded-2xl overflow-hidden" style={{ maxWidth: 325 }}>
-            <iframe
-              src="https://www.tiktok.com/player/v1/7568904419757067575?autoplay=0"
-              style={{ width: 325, height: 578, border: 'none' }}
-              allow="fullscreen"
-              title="Cynthia Faye TikTok 2"
-            />
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 justify-items-center">
+          {[
+            '7633924662233271566',
+            '7568904419757067575',
+            '7586761738243165495',
+            '7633852299248487694',
+          ].map((videoId, i) => (
+            <div key={videoId} className="card-glam rounded-2xl overflow-hidden w-full max-w-[280px]">
+              <iframe
+                src={`https://www.tiktok.com/player/v1/${videoId}?autoplay=0`}
+                style={{ width: '100%', height: 500, border: 'none' }}
+                allow="fullscreen"
+                title={`Cynthia Faye TikTok ${i + 1}`}
+              />
+            </div>
+          ))}
         </div>
 
         <div className="text-center mt-8">
