@@ -51,7 +51,7 @@ function HeroSection() {
           </p>
           <div className="divider-glam w-48 mx-auto my-4" />
           <p className="font-display text-base md:text-lg tracking-[0.15em] uppercase text-gold-bright/90">
-            Medium & Psychic Coach
+            Psychic & Medium
           </p>
           <p className="text-purple-200 text-lg md:text-xl mt-3 font-body">
             More Than 45 Years Experience
