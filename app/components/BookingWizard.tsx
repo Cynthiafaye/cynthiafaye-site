@@ -221,8 +221,7 @@ function StepDateTime({ selectedDate, selectedTime, onSelect, onBack }: {
 
   return (
     <div>
-      <h2 className="font-display text-3xl text-purple-900 text-center mb-2">Pick a Date & Time</h2>
-      <p className="text-purple-600/70 font-body text-center mb-8">All readings are 30 minutes</p>
+      <h2 className="font-display text-3xl text-purple-900 text-center mb-8">Pick a Date & Time</h2>
 
       <div className="card-glam rounded-2xl p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
