@@ -57,7 +57,22 @@ async function cleanStalePending() {
 export async function getAvailableTimesForDate(date: string): Promise<string[]> {
   await cleanStalePending();
 
-  const allSlots = generateAllSlots();
+  let allSlots = generateAllSlots();
+
+  const now = new Date();
+  const centralNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+  const centralDateStr = centralNow.getFullYear() + '-' +
+    String(centralNow.getMonth() + 1).padStart(2, '0') + '-' +
+    String(centralNow.getDate()).padStart(2, '0');
+
+  if (date === centralDateStr) {
+    const currentMinutes = centralNow.getHours() * 60 + centralNow.getMinutes();
+    allSlots = allSlots.filter(slot => {
+      const [h, m] = slot.split(':').map(Number);
+      return (h * 60 + m) > currentMinutes;
+    });
+  }
+
   let bookedTimes: string[] = [];
 
   if (supabase) {
