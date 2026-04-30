@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { paypalClient, paypal } from '@/app/lib/paypal';
+import { paypalConfigured, capturePayPalOrder } from '@/app/lib/paypal';
 import { getBookingById, updateBookingStatus } from '@/app/lib/db';
 import { notifyNewBooking } from '@/app/lib/notifications';
 
 export async function POST(request: NextRequest) {
-  if (!paypalClient) {
+  if (!paypalConfigured) {
     return NextResponse.json({ error: 'PayPal not configured' }, { status: 500 });
   }
 
@@ -15,11 +15,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const captureRequest = new paypal.orders.OrdersCaptureRequest(orderId);
-    captureRequest.requestBody({});
-    const capture = await paypalClient.execute(captureRequest);
+    const capture = await capturePayPalOrder(orderId);
 
-    if (capture.result.status === 'COMPLETED') {
+    if (capture.status === 'COMPLETED') {
       await updateBookingStatus(bookingId, 'confirmed');
 
       const booking = await getBookingById(bookingId);
@@ -44,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       error: 'Payment not completed',
-      status: capture.result.status,
+      status: capture.status,
     }, { status: 400 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Capture failed';

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { paypalClient, paypal } from '@/app/lib/paypal';
+import { paypalConfigured, createPayPalOrder } from '@/app/lib/paypal';
 import { createBooking, isTimeSlotAvailable } from '@/app/lib/db';
 import { READING_TYPES } from '@/app/lib/constants';
 
 export async function POST(request: NextRequest) {
-  if (!paypalClient) {
+  if (!paypalConfigured) {
     return NextResponse.json({ error: 'PayPal not configured' }, { status: 500 });
   }
 
@@ -38,28 +38,14 @@ export async function POST(request: NextRequest) {
   });
 
   try {
-    const orderRequest = new paypal.orders.OrdersCreateRequest();
-    orderRequest.prefer('return=representation');
-    orderRequest.requestBody({
-      intent: 'CAPTURE',
-      purchase_units: [{
-        reference_id: booking.id,
-        description: `${reading.name} with Cynthia Faye on ${date} at ${formatTime(startTime)}`,
-        amount: {
-          currency_code: 'USD',
-          value: reading.price.toFixed(2),
-        },
-      }],
-      application_context: {
-        brand_name: 'Cynthia Faye - The Gift',
-        user_action: 'PAY_NOW',
-      },
+    const order = await createPayPalOrder({
+      referenceId: booking.id,
+      description: `${reading.name} with Cynthia Faye on ${date} at ${formatTime(startTime)}`,
+      amount: reading.price.toFixed(2),
     });
 
-    const order = await paypalClient.execute(orderRequest);
-
     return NextResponse.json({
-      orderId: order.result.id,
+      orderId: order.id,
       bookingId: booking.id,
     });
   } catch (error) {
