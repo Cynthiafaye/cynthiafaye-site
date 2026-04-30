@@ -80,14 +80,14 @@ export default function NavBar({ isBookingPage = false }: { isBookingPage?: bool
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden bg-white/98 backdrop-blur-lg border-t border-pink-100 px-6 pb-6">
+        <div className="md:hidden bg-purple-950/95 backdrop-blur-lg border-t border-gold-bright/20 px-6 pb-6">
           {links.map((link) => (
             isBookingPage ? (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="block py-3 font-display text-sm tracking-[0.2em] uppercase text-purple-800 hover:text-pink-500 transition-colors border-b border-pink-50"
+                className="block py-3 font-display text-sm tracking-[0.2em] uppercase text-gold-bright hover:text-pink-400 transition-colors border-b border-gold-bright/20"
               >
                 {link.label}
               </Link>
@@ -96,7 +96,7 @@ export default function NavBar({ isBookingPage = false }: { isBookingPage?: bool
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="block py-3 font-display text-sm tracking-[0.2em] uppercase text-purple-800 hover:text-pink-500 transition-colors border-b border-pink-50"
+                className="block py-3 font-display text-sm tracking-[0.2em] uppercase text-gold-bright hover:text-pink-400 transition-colors border-b border-gold-bright/20"
               >
                 {link.label}
               </a>
