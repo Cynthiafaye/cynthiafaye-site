@@ -23,8 +23,8 @@ export async function GET() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Cynthia Faye Bookings <onboarding@resend.dev>',
-        to: [notifyEmail],
+        from: 'onboarding@resend.dev',
+        to: [notifyEmail.toLowerCase().trim()],
         subject: 'Test Email - Cynthia Faye Booking System',
         html: '<h2>This is a test email!</h2><p>If you see this, email notifications are working correctly.</p>',
       }),

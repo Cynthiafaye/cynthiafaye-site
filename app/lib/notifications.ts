@@ -77,8 +77,8 @@ export async function sendBookingNotificationEmail(booking: BookingNotification)
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Cynthia Faye Bookings <onboarding@resend.dev>',
-        to: [notifyEmail],
+        from: 'onboarding@resend.dev',
+        to: [notifyEmail.toLowerCase().trim()],
         subject,
         html,
       }),
