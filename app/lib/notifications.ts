@@ -1,5 +1,3 @@
-import nodemailer from 'nodemailer';
-
 interface BookingNotification {
   customerName: string;
   customerPhone: string;
@@ -31,23 +29,13 @@ const readingNames: Record<string, string> = {
 };
 
 export async function sendBookingNotificationEmail(booking: BookingNotification) {
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = parseInt(process.env.SMTP_PORT || '587');
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
+  const resendKey = process.env.RESEND_API_KEY;
   const notifyEmail = process.env.NOTIFY_EMAIL;
 
-  if (!smtpHost || !smtpUser || !smtpPass || !notifyEmail) {
-    console.log('Email notification skipped: SMTP not configured');
+  if (!resendKey || !notifyEmail) {
+    console.log('Email notification skipped: Resend not configured');
     return;
   }
-
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: smtpPort,
-    secure: smtpPort === 465,
-    auth: { user: smtpUser, pass: smtpPass },
-  });
 
   const readingName = readingNames[booking.readingType] || booking.readingType;
   const formattedDate = formatDate(booking.date);
@@ -55,25 +43,6 @@ export async function sendBookingNotificationEmail(booking: BookingNotification)
   const format = booking.readingFormat === 'phone' ? 'Phone' : 'In Person';
 
   const subject = `New Booking: ${readingName} - ${formattedDate} at ${formattedTime}`;
-
-  const text = [
-    `NEW BOOKING RECEIVED`,
-    ``,
-    `Reading: ${readingName}`,
-    `Format: ${format}`,
-    `Date: ${formattedDate}`,
-    `Time: ${formattedTime}`,
-    `Price: $${booking.totalPrice}`,
-    ``,
-    `CUSTOMER INFO`,
-    `Name: ${booking.customerName}`,
-    `Phone: ${booking.customerPhone}`,
-    `Email: ${booking.customerEmail}`,
-    ``,
-    booking.readingFormat === 'phone'
-      ? `** Call ${booking.customerName} at ${booking.customerPhone} at ${formattedTime} on ${formattedDate} **`
-      : `** In-person reading at your office - ${formattedDate} at ${formattedTime} **`,
-  ].join('\n');
 
   const html = `
     <div style="font-family: Georgia, serif; max-width: 500px; margin: 0 auto; padding: 20px;">
@@ -101,14 +70,26 @@ export async function sendBookingNotificationEmail(booking: BookingNotification)
   `;
 
   try {
-    await transporter.sendMail({
-      from: smtpUser,
-      to: notifyEmail,
-      subject,
-      text,
-      html,
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Cynthia Faye Bookings <onboarding@resend.dev>',
+        to: [notifyEmail],
+        subject,
+        html,
+      }),
     });
-    console.log('Email notification sent to', notifyEmail);
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('Resend email failed:', errText);
+    } else {
+      console.log('Email notification sent to', notifyEmail);
+    }
   } catch (err) {
     console.error('Failed to send email notification:', err);
   }
