@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
       const booking = await getBookingById(bookingId);
       if (booking) {
-        notifyNewBooking({
+        await notifyNewBooking({
           customerName: booking.customer_name,
           customerPhone: booking.customer_phone,
           customerEmail: booking.customer_email,
