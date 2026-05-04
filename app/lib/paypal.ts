@@ -54,14 +54,6 @@ export async function createPayPalOrder(params: {
           value: params.amount,
         },
       }],
-      payment_source: {
-        paypal: {
-          experience_context: {
-            brand_name: 'Cynthia Faye - The Gift',
-            user_action: 'PAY_NOW',
-          },
-        },
-      },
     }),
   });
   if (!res.ok) {

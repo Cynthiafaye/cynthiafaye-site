@@ -411,7 +411,7 @@ function StepReview({ booking, reading, onError, onBack }: {
         }
 
         script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${configData.clientId}&currency=USD`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${configData.clientId}&currency=USD&disable-funding=paylater,credit`;
         script.onload = () => setPaypalReady(true);
         script.onerror = () => onError('Failed to load PayPal. Please refresh and try again.');
         document.body.appendChild(script);
