@@ -465,6 +465,16 @@ function StepReview({ booking, reading, onError, onBack }: {
             body: JSON.stringify({
               orderId: data.orderID,
               bookingId: bookingIdRef.current,
+              bookingDetails: {
+                customerName: booking.customerName,
+                customerPhone: booking.customerPhone,
+                customerEmail: booking.customerEmail,
+                readingType: booking.readingType,
+                readingFormat: booking.readingFormat,
+                date: booking.date,
+                startTime: booking.startTime,
+                totalPrice: reading.price,
+              },
             }),
           });
           const captureData = await res.json();

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { paypalConfigured, capturePayPalOrder } from '@/app/lib/paypal';
-import { getBookingById, updateBookingStatus } from '@/app/lib/db';
+import { updateBookingStatus } from '@/app/lib/db';
 import { notifyNewBooking } from '@/app/lib/notifications';
 
 export async function POST(request: NextRequest) {
@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'PayPal not configured' }, { status: 500 });
   }
 
-  const { orderId, bookingId } = await request.json();
+  const { orderId, bookingId, bookingDetails } = await request.json();
 
   if (!orderId || !bookingId) {
     return NextResponse.json({ error: 'Missing orderId or bookingId' }, { status: 400 });
@@ -20,17 +20,16 @@ export async function POST(request: NextRequest) {
     if (capture.status === 'COMPLETED') {
       await updateBookingStatus(bookingId, 'confirmed');
 
-      const booking = await getBookingById(bookingId);
-      if (booking) {
+      if (bookingDetails) {
         await notifyNewBooking({
-          customerName: booking.customer_name,
-          customerPhone: booking.customer_phone,
-          customerEmail: booking.customer_email,
-          readingType: booking.reading_type,
-          readingFormat: booking.reading_format,
-          date: booking.date,
-          startTime: booking.start_time,
-          totalPrice: booking.total_price,
+          customerName: bookingDetails.customerName,
+          customerPhone: bookingDetails.customerPhone,
+          customerEmail: bookingDetails.customerEmail,
+          readingType: bookingDetails.readingType,
+          readingFormat: bookingDetails.readingFormat,
+          date: bookingDetails.date,
+          startTime: bookingDetails.startTime,
+          totalPrice: bookingDetails.totalPrice,
         });
       }
 
