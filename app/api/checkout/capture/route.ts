@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { paypalConfigured, capturePayPalOrder } from '@/app/lib/paypal';
 import { updateBookingStatus } from '@/app/lib/db';
 import { notifyNewBooking } from '@/app/lib/notifications';
+import { storeBooking } from '@/app/lib/booking-store';
 
 export async function POST(request: NextRequest) {
   if (!paypalConfigured) {
@@ -21,16 +22,31 @@ export async function POST(request: NextRequest) {
       await updateBookingStatus(bookingId, 'confirmed');
 
       if (bookingDetails) {
-        await notifyNewBooking({
-          customerName: bookingDetails.customerName,
-          customerPhone: bookingDetails.customerPhone,
-          customerEmail: bookingDetails.customerEmail,
-          readingType: bookingDetails.readingType,
-          readingFormat: bookingDetails.readingFormat,
-          date: bookingDetails.date,
-          startTime: bookingDetails.startTime,
-          totalPrice: bookingDetails.totalPrice,
-        });
+        await Promise.allSettled([
+          notifyNewBooking({
+            customerName: bookingDetails.customerName,
+            customerPhone: bookingDetails.customerPhone,
+            customerEmail: bookingDetails.customerEmail,
+            readingType: bookingDetails.readingType,
+            readingFormat: bookingDetails.readingFormat,
+            date: bookingDetails.date,
+            startTime: bookingDetails.startTime,
+            totalPrice: bookingDetails.totalPrice,
+          }),
+          storeBooking({
+            id: bookingId,
+            customerName: bookingDetails.customerName,
+            customerPhone: bookingDetails.customerPhone,
+            customerEmail: bookingDetails.customerEmail,
+            readingType: bookingDetails.readingType,
+            readingFormat: bookingDetails.readingFormat,
+            date: bookingDetails.date,
+            startTime: bookingDetails.startTime,
+            totalPrice: bookingDetails.totalPrice,
+            paypalOrderId: orderId,
+            confirmedAt: new Date().toISOString(),
+          }),
+        ]);
       }
 
       return NextResponse.json({
