@@ -8,7 +8,7 @@ export type ReadingTypeId = typeof READING_TYPES[number]['id'];
 
 export const READING_FORMATS = [
   { id: 'in-person', label: 'In Person', description: "Santa Rosa Beach at Cynthia's office — exact location revealed after booking" },
-  { id: 'phone', label: 'Reading by Phone', description: "Cynthia uses intuition and it works just the same!" },
+  { id: 'phone', label: 'Reading by Phone', description: "Cynthia can read for you anywhere in the world by phone" },
 ] as const;
 
 export type ReadingFormatId = typeof READING_FORMATS[number]['id'];
